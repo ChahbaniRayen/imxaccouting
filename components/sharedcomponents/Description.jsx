@@ -21,7 +21,8 @@ const Description = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: {  
+    zIndex:10,
     flex: 1,
     padding: 16,
     backgroundColor: '#f9f9f9',

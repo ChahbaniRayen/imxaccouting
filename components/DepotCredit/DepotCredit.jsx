@@ -50,6 +50,7 @@ const DepotCredit = ({
 
 const styles = StyleSheet.create({
   container: {
+    width:'100%',
     marginBottom: 20,
   },
   row: {
@@ -60,13 +61,15 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     width: '48%',
   },
-  textInput: {
+  textInput: { 
+    width:300,
     borderWidth: 1,
     borderColor: '#CED4DA',
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#F8F9FA', 
+    alignContent:'center',
   },
 });
 

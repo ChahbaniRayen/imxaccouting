@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     backgroundColor: '#F5F5F5',
+    
   },
   container: {
     borderRadius: 10,
@@ -46,11 +47,12 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   text: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 60,
+    fontWeight: 700,
     textAlign: 'center',
-    padding: 5,
-    margin: 5,
+    padding: 20,
+    margin: 5, 
+    width:300,
     backgroundColor: 'transparent', 
   },
 });

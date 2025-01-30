@@ -43,12 +43,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: 16, 
+    
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 8, 
+    alignSelf:'center', 
   },
   textInput: {
     width: 300,
@@ -65,11 +67,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     width: 343,
-    alignItems: 'center',
+    alignItems: 'center', 
+    arginBottom: 16,
+    paddingLeft: 8,
+    width:300,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'bold',  
   },
 });
