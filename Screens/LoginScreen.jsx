@@ -1,41 +1,61 @@
-import axios from 'axios';
-import {RouteProp} from '@react-navigation/core';
-import * as React from 'react';
+import {useState} from 'react';
 import {
   StyleSheet,
   View,
   TextInput,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
   Alert,
 } from 'react-native';
+import {getUserByEmail, sendOTP} from '../Services/api';
+import Toast from 'react-native-toast-message';
 
 export function LoginScreen({navigation}) {
-  const [email, setEmail] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [succes, setSucces] = useState(false);
 
   const handleLogin = async () => {
+    console.log('handle login');
     if (!email) {
-      Alert.alert('Erreur', 'Veuillez entrer votre email');
       return;
     }
-
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Email invalide',
+      });
+      return;
+    }
     setLoading(true);
     try {
-       console.log("email:",email); 
-      const response = await  axios(
-        `http://10.1.0.189:3000/api/users/getoneuser/${email}`
-      );
+      const response = await getUserByEmail(email);
+      const {success, message} = response;
 
-      if (response.data) {
-        navigation.navigate('OTPVerifyScreen', {email});
+      if (success) {
+        const response = await sendOTP(email);
+        const {success: successendotp, message} = response;
+        if (successendotp) {
+          Toast.show({
+            type: 'success',
+            text1: 'Code envoyé',
+          });
+
+          navigation.navigate('OTPVerifyScreen', {email});
+        }
       } else {
-        Alert.alert('Erreur', 'Utilisateur non trouvé');3         
+        Toast.show({
+          type: 'error',
+          text1: message,
+        });
       }
-    } catch (error) { 
-      console.error(error.message);
-
-      Alert.alert('Erreur', "Impossible de vérifier l'utilisateur"); 
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Une erreur est survenue',
+      });
     } finally {
       setLoading(false);
     }
@@ -56,10 +76,15 @@ export function LoginScreen({navigation}) {
           keyboardType="email-address"
           autoCapitalize="none"
         />
-        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-          <Text style={styles.buttonText}>
-            {loading ? 'Vérification...' : 'Se connecter'}
-          </Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>{'Se connecter'}</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -71,13 +96,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16, 
+    padding: 16,
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8, 
-    alignSelf: 'center', 
+    marginBottom: 8,
+    alignSelf: 'center',
   },
   textInput: {
     width: 300,
@@ -94,11 +119,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     width: 300,
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',  
+    fontWeight: 'bold',
   },
 });

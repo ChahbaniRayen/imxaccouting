@@ -6,14 +6,16 @@ import {OTPVerifyScreen} from './Screens/OTPVerifyScreen';
 import ChoseCompanyScreen from './Screens/ChoseCompanyScreen';
 import ApportsScreen from './Screens/ApportsScreen';
 import DepensesScreen from './Screens/DepensesScreen';
-// import ApportsScreen from './Screens/ApportsScreen';
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="LoginScreen">
+      <Stack.Navigator
+        initialRouteName="LoginScreen"
+        screenOptions={{headerShown: false}}>
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="OTPVerifyScreen" component={OTPVerifyScreen} />
         <Stack.Screen
@@ -23,6 +25,7 @@ export default function App() {
         <Stack.Screen name="ApportsScreen" component={ApportsScreen} />
         <Stack.Screen name="DepensesScreen" component={DepensesScreen} />
       </Stack.Navigator>
+      <Toast />
     </NavigationContainer>
   );
 }
