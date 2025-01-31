@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {RouteProp} from '@react-navigation/core';
 import * as React from 'react';
 import {
@@ -6,14 +7,37 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 
 export function LoginScreen({navigation}) {
   const [email, setEmail] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
-  const handleLogin = () => {
-    if (email) {
-      navigation.navigate('OTPVerifyScreen', {email});
+  const handleLogin = async () => {
+    if (!email) {
+      Alert.alert('Erreur', 'Veuillez entrer votre email');
+      return;
+    }
+
+    setLoading(true);
+    try {
+       console.log("email:",email); 
+      const response = await  axios(
+        `http://10.1.0.189:3000/api/users/getoneuser/${email}`
+      );
+
+      if (response.data) {
+        navigation.navigate('OTPVerifyScreen', {email});
+      } else {
+        Alert.alert('Erreur', 'Utilisateur non trouvé');3         
+      }
+    } catch (error) { 
+      console.error(error.message);
+
+      Alert.alert('Erreur', "Impossible de vérifier l'utilisateur"); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -29,9 +53,13 @@ export function LoginScreen({navigation}) {
           style={styles.textInput}
           value={email}
           onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Se connecter</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+          <Text style={styles.buttonText}>
+            {loading ? 'Vérification...' : 'Se connecter'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -44,13 +72,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16, 
-    
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8, 
-    alignSelf:'center', 
+    alignSelf: 'center', 
   },
   textInput: {
     width: 300,
@@ -66,11 +93,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    width: 343,
+    width: 300,
     alignItems: 'center', 
-    arginBottom: 16,
-    paddingLeft: 8,
-    width:300,
   },
   buttonText: {
     color: '#FFFFFF',
