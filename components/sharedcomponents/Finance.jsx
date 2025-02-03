@@ -1,211 +1,207 @@
-import React, {useState} from 'react';
-import {View, StyleSheet} from 'react-native';
-import DepotCredit from '../DepotCredit/DepotCredit';
-import AddButton from '../sharedcomponents/buttons/addbutton';
-import LabelComponent from './LabelComponent';
-import {getAllfinance} from '../../Services/apiDenses';
+  import React, { useState, useEffect } from 'react';
+  import { View, StyleSheet } from 'react-native';
+  import DepotCredit from '../DepotCredit/DepotCredit';
+  import AddButton from '../sharedcomponents/buttons/addbutton';
+  import LabelComponent from './LabelComponent';  
+  import { getAllfinacesDepenses } from '../../Services/apiDenses';
 
-const Finance = () => { 
-  const [fetchedfinance, setFetchedfinance] = useState([]);
-  const [creditSections, setCreditSections] = useState([
-    {
-      id: 1,
-      dropdowns1: [{id: 1, selectedChoice: null}],
-      dropdowns2: [{id: 1, selectedChoice: null}],
-      value: '',
-    },
-  ]);
+  const Finance = () => {
+    const [creditSections, setCreditSections] = useState([]); 
+    const [debitSections, setDebitSections] = useState([]); 
+    const [fetchedFinance, setFetchedFinance] = useState([]); 
+    const [finSubcategoryNames, setFinSubcategoryNames] = useState([]); 
+    const [finSubcategory2Values, setFinSubcategory2Values] = useState([]);
+    const [dataLoaded, setDataLoaded] = useState(false); 
 
-  const [debitSections, setDebitSections] = useState([
-    {
-      id: 1,
-      dropdowns1: [{id: 1, selectedChoice: null}],
-      dropdowns2: [{id: 1, selectedChoice: null}],
-      value: '',
-    },
-  ]); 
-  useEffect(() => {
+    useEffect(() => {
+      const fetchFinance = async () => {
+        try {
+          const response = await getAllfinacesDepenses();
+          console.log('Fetched response:', JSON.stringify(response, null, 2));
     
-  const fetchfinance = async () => {
-    const response = await getAllfinance();
-    setFetchedfinance(response);
-    // map the response to get the finsubcategoryname
-    const filtredfinance = response.filter(
-      finance => finance.financeName );  
-      const subfinance =filtredfinance.flatMap(finance => 
-        finsubcategory2 
-      )
-      setCreditSections( 
-        setCreditSections(prevSections =>
-          prevSections.map(section => ({
-            ...section,
-            dropdowns1: filtredfinance.map(finance => ({
-              id: finance.id,
-              selectedChoice: finance.financeName,
-            })),
-          }))
-        ) 
-        //add finsubcategory2 into the second dropdown  
-         
+          setFetchedFinance(response);
+    
+          const fetchedFinaceCategoryName = response
+            .map(financeItem => financeItem.finances)
+            .flat()
+            .map(fin => fin.finsubcategoryname);
+    
+          const fetchedFinaceSubcategory2 = [
+            ...new Set(
+              response
+                .map(financeItem => financeItem.finances)
+                .flat()
+                .map(fin => fin.finsubcategory2)
+                .flat()
+            ),
+          ];
+    
+          console.log('Fetched subcategory names:', fetchedFinaceCategoryName);
+          console.log('Fetched subcategory2 values:', fetchedFinaceSubcategory2);
+    
+          setFinSubcategoryNames(fetchedFinaceCategoryName);
+          setFinSubcategory2Values(fetchedFinaceSubcategory2);
+          setDataLoaded(true); 
 
-      
-      );
+          // Initialiser une section de crédit et une section de débit
+          if (fetchedFinaceCategoryName.length > 0 && fetchedFinaceSubcategory2.length > 0) {
+            setCreditSections([{
+              id: 1,
+              dropdowns1: fetchedFinaceCategoryName.map((name, index) => ({
+                id: index + 1,
+                label: name,
+                value: name
+              })),
+              dropdowns2: fetchedFinaceSubcategory2.map((value, index) => ({
+                id: index + 1,
+                label: value,
+                value: value
+              })),
+              value: '',
+            }]);
 
-
-        //add finsubcategory2 into the second dropdown 
-
-
+            setDebitSections([{
+              id: 1,
+              dropdowns1: fetchedFinaceCategoryName.map((name, index) => ({
+                id: index + 1,
+                label: name,
+                value: name
+              })),
+              dropdowns2: fetchedFinaceSubcategory2.map((value, index) => ({
+                id: index + 1,
+                label: value,
+                value: value
+              })),
+              value: '',
+            }]);
+          }
+        } catch (error) {
+          console.error("Error fetching finance data", error);
+        }
+      };
+    
+      fetchFinance();  
+    }, []); 
+    const handleSetDropdown1Data = (newData) => {
+      if (!newData || !Array.isArray(newData)) {
+        console.error("handleSetDropdown1Data received invalid data:", newData);
+        return;
+      }
+      setFinSubcategoryNames(newData.map(item => item.label));
+    };
+    
+    const handleSetDropdown2Data = (newData) => {
+      if (!newData || !Array.isArray(newData)) {
+        console.error("handleSetDropdown2Data received invalid data:", newData);
+        return;
+      }
+      setFinSubcategory2Values(newData.map(item => item.label));
+    };
+    
+    
+    const handleDropdown1Change = (sectionId, selectedValue, setSections) => {
+      setSections(prev =>
+        prev.map(section =>
+          section.id === sectionId
+            ? { ...section, selectedDropdown1: selectedValue }
+            : section
         )
-
-  }
-
+      );
+    };
     
-  }, [])
+    const handleDropdown2Change = (sectionId, selectedValue, setSections) => {
+      setSections(prev =>
+        prev.map(section =>
+          section.id === sectionId
+            ? { ...section, selectedDropdown2: selectedValue }
+            : section
+        )
+      );
+    }; 
+    const handleAddSection = (setSections, type) => {
+      if (dataLoaded && finSubcategoryNames.length > 0 && finSubcategory2Values.length > 0) {
+        setSections(prev => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            dropdowns1: finSubcategoryNames.map((name, index) => ({
+              id: index + 1,
+              label: name,
+              value: name
+            })),
+            dropdowns2: finSubcategory2Values.map((value, index) => ({
+              id: index + 1,
+              label: value,
+              value: value
+            })),
+            value: '',
+          },
+        ]);
+      } else {
+        console.log('Les données des sous-catégories ne sont pas encore chargées.');
+      }  
   
+    }
 
-  const handleAddCreditSection = () => {
-    setCreditSections([
-      ...creditSections,
-      {
-        id: creditSections.length + 1,
-        dropdowns1: [{id: 1, selectedChoice: null}],
-        dropdowns2: [{id: 1, selectedChoice: null}],
-        value: '',
-      },
-    ]);
-  };
+    return (
+      <View style={styles.container}>
+        <LabelComponent style={styles.label} name="Finances" />
 
-  const handleAddDebitSection = () => {
-    setDebitSections([
-      ...debitSections,
-      {
-        id: debitSections.length + 1,
-        dropdowns1: [{id: 1, selectedChoice: null}],
-        dropdowns2: [{id: 1, selectedChoice: null}],
-        value: '',
-      },
-    ]);
-  };
+        {/* SECTIONS DE CRÉDIT */}
+        {creditSections.map(section => (
+          <View key={`credit-${section.id}`}>
+            <DepotCredit
+    dropdowns1={section.dropdowns1}
+    dropdowns2={section.dropdowns2}
+    value={section.value} 
+    onValueChange={(val) => {
+      setCreditSections(prev =>
+        prev.map(s => (s.id === section.id ? { ...s, value: val } : s))
+      );
+    }}
+    onDropdown1Change={(val) => handleDropdown1Change(section.id, val, setCreditSections)} 
+    onDropdown2Change={(val) => handleDropdown2Change(section.id, val, setCreditSections)}  
+    setData1={handleSetDropdown1Data} // Ajout du setData pour dropdown1
+  setData2={handleSetDropdown2Data} 
+    name={'Crédit'}
+  />
 
-  const handleDropdown1Change = (setSections, sectionId, dropdownId, value) => {
-    setSections(prevSections =>
-      prevSections.map(section =>
-        section.id === sectionId
-          ? {
-              ...section,
-              dropdowns1: section.dropdowns1.map(dropdown =>
-                dropdown.id === dropdownId
-                  ? {...dropdown, selectedChoice: value}
-                  : dropdown,
-              ),
-            }
-          : section,
-      ),
+          </View>
+        ))}
+        <AddButton onPress={() => handleAddSection(setCreditSections, 'credit')} text="Add Crédit" />
+
+        {/* SECTIONS DE DÉBIT */}
+        {debitSections.map(section => (
+          <View key={`debit-${section.id}`}>
+            <DepotCredit
+    dropdowns1={section.dropdowns1}
+    dropdowns2={section.dropdowns2}
+    value={section.value}
+    onValueChange={(val) => {
+      setDebitSections(prev =>
+        prev.map(s => (s.id === section.id ? { ...s, value: val } : s))
+      );
+    }}
+    onDropdown1Change={(val) => handleDropdown1Change(section.id, val, setDebitSections)} 
+    onDropdown2Change={(val) => handleDropdown2Change(section.id, val, setDebitSections)} 
+    setData1={handleSetDropdown1Data} // Ajout du setData pour dropdown1
+  setData2={handleSetDropdown2Data} 
+    name={'Débit'}
+  />
+
+          </View>
+        ))}
+        <AddButton onPress={() => handleAddSection(setDebitSections, 'debit')} text="Add Débit" />
+      </View>
     );
   };
 
-  const handleDropdown2Change = (setSections, sectionId, dropdownId, value) => {
-    setSections(prevSections =>
-      prevSections.map(section =>
-        section.id === sectionId
-          ? {
-              ...section,
-              dropdowns2: section.dropdowns2.map(dropdown =>
-                dropdown.id === dropdownId
-                  ? {...dropdown, selectedChoice: value}
-                  : dropdown,
-              ),
-            }
-          : section,
-      ),
-    );
-  };
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: '#FFFFFF',
+    },
+  });
 
-  const handleValueChange = (setSections, sectionId, value) => {
-    setSections(prevSections =>
-      prevSections.map(section =>
-        section.id === sectionId ? {...section, value} : section,
-      ),
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <LabelComponent style={styles.label} name="Finances" />
-
-      {/* CREDIT SECTIONS */}
-      {creditSections.map(section => (
-        <DepotCredit
-          key={`credit-${section.id}`}
-          dropdowns1={section.dropdowns1}
-          dropdowns2={section.dropdowns2}
-          onDropdown1Change={(dropdownId, value) =>
-            handleDropdown1Change(
-              setCreditSections,
-              section.id,
-              dropdownId,
-              value,
-            )
-          }
-          onDropdown2Change={(dropdownId, value) =>
-            handleDropdown2Change(
-              setCreditSections,
-              section.id,
-              dropdownId,
-              value,
-            )
-          }
-          value={section.value}
-          onValueChange={value =>
-            handleValueChange(setCreditSections, section.id, value)
-          }
-          name={'Crédit'}
-        />
-      ))}
-
-      <AddButton onPress={handleAddCreditSection} text="Add Crédit" />
-
-      {/* DEBIT SECTIONS */}
-      {debitSections.map(section => (
-        <DepotCredit
-          key={`debit-${section.id}`}
-          dropdowns1={section.dropdowns1}
-          dropdowns2={section.dropdowns2}
-          onDropdown1Change={(dropdownId, value) =>
-            handleDropdown1Change(
-              setDebitSections,
-              section.id,
-              dropdownId,
-              value,
-            )
-          }
-          onDropdown2Change={(dropdownId, value) =>
-            handleDropdown2Change(
-              setDebitSections,
-              section.id,
-              dropdownId,
-              value,
-            )
-          }
-          value={section.value}
-          onValueChange={value =>
-            handleValueChange(setDebitSections, section.id, value)
-          }
-          name={'Débit'}
-        />
-      ))}
-
-      <AddButton onPress={handleAddDebitSection} text="Add Débit" />
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#FFFFFF',
-  },
-});
-
-export default Finance;
+  export default Finance;

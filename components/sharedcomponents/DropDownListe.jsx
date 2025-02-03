@@ -27,9 +27,9 @@ const DropDownListe = ({
         label: trimmedText,
         value: trimmedText.toLowerCase().replace(/\s/g, '_'),
       };
-
+         if (setData){ 
       setData(prevData => [...prevData, newChoice]);
-
+}
       // setNewItem(newChoice);
       setValue(newChoice.value);
       setSelectedChoice(newChoice); // Pass the new company value back to ChoseCompanyScreen
