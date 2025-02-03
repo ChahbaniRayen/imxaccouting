@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import {View, TextInput, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const Ammount = ({ type }) => {
+const Ammount = ({type, onValueChange}) => {
   const [value, setValue] = useState('000.000');
 
+  // Définition des couleurs du gradient en dehors de handleChange
   const gradientColors =
-  type === 'dépense' ? ['#9FEFD1', '#FFFFFF'] : ['#FFCBCB', '#FFFFFF']; 
+    type === 'dépense' ? ['#FFCBCB', '#FFFFFF'] : ['#9FEFD1', '#FFFFFF'];
+
+  const handleChange = text => {
+    setValue(text);
+    onValueChange(text); // Mise à jour de `amount` dans DepensesScreen
+  };
 
   return (
     <View style={styles.wrapper}>
-      <LinearGradient 
-        colors={gradientColors} 
+      <LinearGradient
+        colors={gradientColors}
         style={styles.container}
-        start={{ x: 0, y: 0 }} 
-        end={{ x: 1, y: 0 }} 
-      >
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 0}}>
         <TextInput
           style={styles.text}
           keyboardType="numeric"
           value={value}
-          onChangeText={text => setValue(text)}
-          placeholder="Entrez une valeur"
+          onChangeText={handleChange}
           maxLength={10}
         />
       </LinearGradient>
@@ -35,7 +39,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     backgroundColor: '#F5F5F5',
-    
   },
   container: {
     borderRadius: 10,
@@ -48,12 +51,12 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 60,
-    fontWeight: 700,
+    fontWeight: '700',
     textAlign: 'center',
     padding: 20,
-    margin: 5, 
-    width:300,
-    backgroundColor: 'transparent', 
+    margin: 5,
+    width: 300,
+    backgroundColor: 'transparent',
   },
 });
 

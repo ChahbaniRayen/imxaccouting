@@ -1,19 +1,19 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const HeaderComponent = ({ title, type, onClose }) => {
+const HeaderComponent = ({title, type, onClose}) => {
+  console.log(title, 'tttttttttt');
   const gradientColors =
-  type === 'dépense' ? ['#9FEFD1', '#FFFFFF'] : ['#FFCBCB', '#FFFFFF']; 
-    
+    title === 'Dépense' ? ['#FFCBCB', '#FFFFFF'] : ['#9FEFD1', '#FFFFFF'];
+
   return (
-    <LinearGradient 
-      colors={gradientColors} 
+    <LinearGradient
+      colors={gradientColors}
       style={styles.header}
-      start={{ x: 0, y: 0 }} 
-      end={{ x: 1, y: 0 }} 
-    >
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 0}}>
       <Text style={styles.title}>{title}</Text>
       <TouchableOpacity onPress={onClose} style={styles.closeButton}>
         <Icon name="close" size={24} color="black" />

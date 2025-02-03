@@ -1,9 +1,14 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, StyleSheet} from 'react-native';
+import {View, TextInput, StyleSheet} from 'react-native';
 import LabelComponent from './LabelComponent';
 
-const Description = () => {
+const Description = ({onTextChange}) => {
   const [text, setText] = useState('');
+
+  const handleChangeText = newText => {
+    setText(newText); // Met à jour l'état local du composant Description
+    onTextChange(newText); // Remonte la valeur vers DepensesScreen
+  };
 
   return (
     <View style={styles.container}>
@@ -14,15 +19,15 @@ const Description = () => {
         placeholderTextColor="#aaa"
         multiline
         value={text}
-        onChangeText={setText}
+        onChangeText={handleChangeText} // Utiliser handleChangeText ici
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {  
-    zIndex:10,
+  container: {
+    zIndex: 10,
     flex: 1,
     padding: 16,
     backgroundColor: '#f9f9f9',

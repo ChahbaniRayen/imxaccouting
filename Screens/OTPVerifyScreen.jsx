@@ -46,12 +46,9 @@ export function OTPVerifyScreen(props) {
     }
 
     try {
-      console.log('Envoi de la requête OTP:', {email, otpValue}); // Log avant l'appel API
       const response = await verifyOTP(email, otpValue);
-      console.log('Réponse du serveur:', response); // Voir ce qui est reçu
 
       if (response.success) {
-        console.log('hereee');
         navigation.navigate('ChoseCompanyScreen');
       } else {
         Toast.show({

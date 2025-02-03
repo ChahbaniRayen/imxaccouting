@@ -6,12 +6,16 @@ import Account from '../components/sharedcomponents/Account';
 import Finance from '../components/sharedcomponents/Finance';
 import Media from '../components/sharedcomponents/Media/Media';
 import Description from '../components/sharedcomponents/Description';
-const ApportsScreen = () => {
+const ApportsScreen = props => {
+  const {title, type} = props.route.params;
+  console.log(title, 'title');
+  console.log(type, 'typeaaaa');
+
   return (
     <SafeAreaView>
       <ScrollView>
-        <HeaderComponent title="Apport" />
-        <Ammount type="apport" />
+        <HeaderComponent title={title} type={type} />
+        <Ammount type={type} />
         <DatePeacker />
         <Description />
         <Account />

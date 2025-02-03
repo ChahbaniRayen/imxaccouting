@@ -7,6 +7,7 @@ import ChoseCompanyScreen from './Screens/ChoseCompanyScreen';
 import ApportsScreen from './Screens/ApportsScreen';
 import DepensesScreen from './Screens/DepensesScreen';
 import Toast from 'react-native-toast-message';
+import DashbordScreen from './Screens/DashbordScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -14,7 +15,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="LoginScreen"
+        initialRouteName="ChoseCompanyScreen"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="OTPVerifyScreen" component={OTPVerifyScreen} />
@@ -24,6 +25,7 @@ export default function App() {
         />
         <Stack.Screen name="ApportsScreen" component={ApportsScreen} />
         <Stack.Screen name="DepensesScreen" component={DepensesScreen} />
+        <Stack.Screen name="DashbordScreen" component={DashbordScreen} />
       </Stack.Navigator>
       <Toast />
     </NavigationContainer>

@@ -17,7 +17,6 @@ export function LoginScreen({navigation}) {
   const [succes, setSucces] = useState(false);
 
   const handleLogin = async () => {
-    console.log('handle login');
     if (!email) {
       return;
     }
